@@ -106,7 +106,7 @@ export const useFileStore = create<FileStore>()(
         }
       ],
       activeFileId: 'welcome',
-      expandedFolders: [],
+      expandedFolders: [] as string[],
 
       addFile: (parentId, name) => {
         const newFile: FileNode = {
@@ -189,7 +189,21 @@ export const useFileStore = create<FileStore>()(
       }
     }),
     {
-      name: 'uncle-markdown-storage'
+      name: 'uncle-markdown-storage',
+      partialize: (state) => ({
+        files: state.files,
+        activeFileId: state.activeFileId,
+        expandedFolders: Array.isArray(state.expandedFolders) 
+          ? state.expandedFolders 
+          : []
+      }),
+      merge: (persistedState: any, currentState) => ({
+        ...currentState,
+        ...persistedState,
+        expandedFolders: Array.isArray(persistedState?.expandedFolders)
+          ? persistedState.expandedFolders
+          : []
+      })
     }
   )
 );
