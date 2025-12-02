@@ -4,7 +4,19 @@
 
 Uncle Markdown can be deployed in two ways:
 
-### Option 1: Vercel (Recommended - includes OAuth backend)
+### Option 1: GitHub Pages (Free, Recommended for Public Projects)
+
+**Automated deployment via GitHub Actions** - see `.github/PAGES_SETUP.md` for detailed setup.
+
+Quick start:
+1. Enable GitHub Pages in repository settings (Source: GitHub Actions)
+2. Add `VITE_GITHUB_CLIENT_ID` to GitHub Secrets
+3. Deploy OAuth backend to Vercel (see below)
+4. Push to main branch - auto-deploys!
+
+**Result**: `https://YOUR_USERNAME.github.io/uncle_markdown`
+
+### Option 2: Vercel (Easiest - includes OAuth backend)
 
 Vercel provides both static hosting AND serverless functions for the OAuth flow.
 
