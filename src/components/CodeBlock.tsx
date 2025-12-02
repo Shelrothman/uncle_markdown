@@ -18,7 +18,7 @@ const CodeBlock: React.FC<CodeBlockProps> = ({ children, className }) => {
   };
 
   const match = /language-(\w+)/.exec(className || '');
-  const language = match ? match[1] : 'shell';
+  const language = match ? match[1] : '';
 
   return (
     <div className="code-block-container">
