@@ -1,0 +1,75 @@
+.app-header {
+  height: 50px;
+  background: #252526;
+  border-bottom: 1px solid #2d2d2d;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.app-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #4ec9b0;
+  letter-spacing: 0.5px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid #4ec9b0;
+}
+
+.user-name {
+  color: #cccccc;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.header-button {
+  background: #3c3c3c;
+  border: 1px solid #454545;
+  color: #cccccc;
+  padding: 6px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.header-button:hover {
+  background: #454545;
+  border-color: #555555;
+}
+
+.header-button.primary {
+  background: #4ec9b0;
+  border-color: #4ec9b0;
+  color: #000000;
+}
+
+.header-button.primary:hover {
+  background: #5dd9c0;
+  border-color: #5dd9c0;
+}
