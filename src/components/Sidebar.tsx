@@ -2,7 +2,11 @@ import React, { useState } from 'react';
 import { useFileStore, type FileNode } from '../store/fileStore';
 import './Sidebar.css';
 
-const Sidebar: React.FC = () => {
+interface SidebarProps {
+  onToggleSidebar?: () => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ onToggleSidebar }) => {
   const { files, activeFileId, expandedFolders, addFile, addFolder, deleteNode, setActiveFile, toggleFolder, renameNode } = useFileStore();
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; nodeId: string | null } | null>(null);
   const [newItemDialog, setNewItemDialog] = useState<{ type: 'file' | 'folder'; parentId: string | null } | null>(null);
@@ -113,6 +117,7 @@ const Sidebar: React.FC = () => {
           <div className="sidebar-actions">
             <button onClick={() => handleNewFile(null)} title="New File">📄</button>
             <button onClick={() => handleNewFolder(null)} title="New Folder">📁</button>
+            <button onClick={onToggleSidebar} title="Close Sidebar">🗂️</button>
           </div>
         </div>
         <div className="file-tree" onContextMenu={(e) => handleContextMenu(e, null)}>

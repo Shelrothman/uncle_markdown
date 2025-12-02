@@ -11,15 +11,22 @@ function App() {
     <div className="app">
       <Header />
       <div className="app-content">
-        {sidebarVisible && <Sidebar />}
+        {sidebarVisible ? (
+          <Sidebar onToggleSidebar={() => setSidebarVisible(false)} />
+        ) : (
+          <div className="sidebar-collapsed">
+            <div className="collapsed-icons">
+              <button 
+                className="collapsed-icon" 
+                onClick={() => setSidebarVisible(true)}
+                title="Show Sidebar"
+              >
+                📁
+              </button>
+            </div>
+          </div>
+        )}
         <Editor />
-        <button 
-          className="sidebar-toggle" 
-          onClick={() => setSidebarVisible(!sidebarVisible)}
-          title={sidebarVisible ? 'Hide Sidebar' : 'Show Sidebar'}
-        >
-          {sidebarVisible ? '◀' : '▶'}
-        </button>
       </div>
     </div>
   )
