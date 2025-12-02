@@ -51,7 +51,7 @@ export const useAuthStore = create<AuthStore>()(
           await octokit.repos.createForAuthenticatedUser({
             name,
             description: 'My markdown notes from Uncle Markdown',
-            private: false,
+            private: true,
             auto_init: true
           });
           set({ repoName: name });
