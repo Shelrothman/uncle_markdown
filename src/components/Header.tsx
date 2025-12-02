@@ -14,10 +14,33 @@ const Header: React.FC = () => {
     const code = urlParams.get('code');
     
     if (code && !accessToken) {
-      // In production, exchange code for token via your backend
-      // For now, this is a placeholder
-      console.log('OAuth code received:', code);
-      // You would call your backend here to exchange the code for a token
+      // Exchange code for token via backend
+      const exchangeCodeForToken = async () => {
+        try {
+          const apiUrl = import.meta.env.VITE_API_URL || '/api/auth';
+          const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ code }),
+          });
+
+          if (!response.ok) {
+            throw new Error('Failed to authenticate');
+          }
+
+          const data = await response.json();
+          setAuth(data.access_token, data.user);
+          
+          // Clean up URL
+          window.history.replaceState({}, document.title, window.location.pathname);
+        } catch (error) {
+          console.error('Authentication error:', error);
+        }
+      };
+
+      exchangeCodeForToken();
     }
   }, [accessToken, setAuth]);
 
