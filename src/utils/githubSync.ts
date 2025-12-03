@@ -128,23 +128,38 @@ async function createCommit(
 
 /**
  * Updates the branch reference to point to the new commit
+ * Fetches the latest SHA right before updating to avoid race conditions
  */
 async function updateBranchRef(
   octokit: Octokit,
   owner: string,
   repo: string,
-  commitSHA: string
+  commitSHA: string,
+  expectedParentSHA: string
 ): Promise<boolean> {
   try {
     const { data } = await octokit.repos.get({ owner, repo });
     const defaultBranch = data.default_branch || 'main';
+
+    // Fetch the current ref to ensure it matches our expected parent
+    const { data: refData } = await octokit.git.getRef({
+      owner,
+      repo,
+      ref: `heads/${defaultBranch}`,
+    });
+
+    // Check if the ref has moved since we started
+    if (refData.object.sha !== expectedParentSHA) {
+      console.error('Branch has moved since sync started. Expected:', expectedParentSHA, 'Got:', refData.object.sha);
+      return false;
+    }
 
     await octokit.git.updateRef({
       owner,
       repo,
       ref: `heads/${defaultBranch}`,
       sha: commitSHA,
-      force: false, // Ensure we don't force push
+      force: false,
     });
 
     return true;
@@ -155,14 +170,17 @@ async function updateBranchRef(
 }
 
 /**
- * Syncs all files to GitHub repository
+ * Syncs all files to GitHub repository with retry logic
  */
 export async function syncToGitHub(
   octokit: Octokit,
   owner: string,
   repo: string,
-  files: FileNode[]
+  files: FileNode[],
+  retryCount: number = 0
 ): Promise<SyncResult> {
+  const MAX_RETRIES = 3;
+  
   try {
     // Flatten file tree
     const flatFiles = flattenFileTree(files);
@@ -195,10 +213,17 @@ export async function syncToGitHub(
       return { success: false, error: 'Failed to create commit' };
     }
 
-    // Update branch
-    const updated = await updateBranchRef(octokit, owner, repo, commitSHA);
+    // Update branch (with parent SHA check to avoid race conditions)
+    const updated = await updateBranchRef(octokit, owner, repo, commitSHA, branchInfo.commitSHA);
     if (!updated) {
-      return { success: false, error: 'Failed to update branch' };
+      // Retry if branch moved and we haven't exceeded max retries
+      if (retryCount < MAX_RETRIES) {
+        console.log(`Branch updated by another process. Retrying (${retryCount + 1}/${MAX_RETRIES})...`);
+        // Wait with exponential backoff
+        await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 1000));
+        return syncToGitHub(octokit, owner, repo, files, retryCount + 1);
+      }
+      return { success: false, error: 'Branch was updated by another process. Maximum retries exceeded.' };
     }
 
     return { success: true };
