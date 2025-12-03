@@ -1,7 +1,5 @@
 import React, { useEffect } from 'react';
 import { useAuthStore } from '../store/authStore';
-import { useFileStore } from '../store/fileStore';
-import { triggerSync } from '../utils/githubSync';
 import './Header.css';
 
 // For development, you'll need to set up GitHub OAuth App
@@ -13,40 +11,8 @@ const Header: React.FC = () => {
     accessToken, 
     logout, 
     setAuth, 
-    createRepository,
-    syncStatus,
-    lastSyncTime,
-    syncError,
-    setSyncStatus,
-    setLastSyncTime,
-    getOctokit,
-    repoName,
-    autoSyncPending
+    createRepository
   } = useAuthStore();
-  const files = useFileStore((state) => state.files);
-
-  const handleManualSync = async () => {
-    const octokit = getOctokit();
-    if (!octokit || !user || !repoName) return;
-    
-    setSyncStatus('syncing');
-    const result = await triggerSync(octokit, user, repoName, files);
-    
-    if (result.success) {
-      setSyncStatus('synced');
-      setLastSyncTime(Date.now());
-    } else {
-      setSyncStatus('error', result.error);
-    }
-  };
-
-  const formatLastSync = () => {
-    if (!lastSyncTime) return '';
-    const seconds = Math.floor((Date.now() - lastSyncTime) / 1000);
-    if (seconds < 60) return 'just now';
-    if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
-    return `${Math.floor(seconds / 3600)}h ago`;
-  };
 
   useEffect(() => {
     // Check for OAuth callback
@@ -109,28 +75,6 @@ const Header: React.FC = () => {
       <div className="header-right">
         {user ? (
           <>
-            <div className="sync-status">
-              {syncStatus === 'syncing' && <span className="sync-indicator syncing">Syncing...</span>}
-              {syncStatus === 'synced' && (
-                <span className="sync-indicator synced">
-                  ✓ Synced {formatLastSync()}
-                </span>
-              )}
-              {syncStatus === 'error' && (
-                <span className="sync-indicator error" title={syncError || 'Sync failed'}>
-                  ✗ Sync failed
-                </span>
-              )}
-              {syncStatus === 'idle' && user && <span className="sync-indicator idle">Not synced</span>}
-            </div>
-            <button 
-              onClick={handleManualSync} 
-              className="header-button sync-button"
-              disabled={syncStatus === 'syncing' || autoSyncPending}
-              title={autoSyncPending ? "Auto-sync pending..." : "Sync to GitHub now"}
-            >
-              🔄 Sync
-            </button>
             <div className="user-info">
               <img src={user.avatar_url} alt={user.login} className="user-avatar" />
               <span className="user-name">{user.login}</span>

@@ -19,7 +19,6 @@ interface AuthStore {
   syncStatus: SyncStatus;
   lastSyncTime: number | null;
   syncError: string | null;
-  autoSyncPending: boolean;
   
   setAuth: (token: string, user: GitHubUser) => void;
   logout: () => void;
@@ -28,7 +27,6 @@ interface AuthStore {
   setSyncStatus: (status: SyncStatus, error?: string) => void;
   setLastSyncTime: (time: number) => void;
   getOctokit: () => Octokit | null;
-  setAutoSyncPending: (pending: boolean) => void;
 }
 
 export const useAuthStore = create<AuthStore>()(
@@ -41,7 +39,6 @@ export const useAuthStore = create<AuthStore>()(
       syncStatus: 'idle',
       lastSyncTime: null,
       syncError: null,
-      autoSyncPending: false,
 
       setAuth: (token, user) => {
         const octokit = new Octokit({ auth: token });
@@ -67,12 +64,9 @@ export const useAuthStore = create<AuthStore>()(
       setSyncStatus: (status, error) => {
         set({ syncStatus: status, syncError: error || null });
       },
+      
       setLastSyncTime: (time) => {
         set({ lastSyncTime: time });
-      },
-
-      setAutoSyncPending: (pending) => {
-        set({ autoSyncPending: pending });
       },
 
       getOctokit: () => {
@@ -118,7 +112,6 @@ export const useAuthStore = create<AuthStore>()(
         syncStatus: state.syncStatus,
         lastSyncTime: state.lastSyncTime,
         syncError: state.syncError,
-        autoSyncPending: state.autoSyncPending,
         // Exclude octokit - it will be recreated from token
       }),
     }

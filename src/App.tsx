@@ -2,6 +2,7 @@ import { useState } from 'react'
 import Header from './components/Header'
 import Sidebar from './components/Sidebar'
 import Editor from './components/Editor'
+import Footer from './components/Footer'
 import { useAutoSync } from './hooks/useAutoSync'
 import './App.css'
 
@@ -32,6 +33,7 @@ function App() {
         )}
         <Editor />
       </div>
+      <Footer />
     </div>
   )
 }

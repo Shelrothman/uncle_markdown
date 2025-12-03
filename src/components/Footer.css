@@ -1,0 +1,70 @@
+.app-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 22px;
+  background: #1e1e1e;
+  border-top: 1px solid #2d2d2d;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 12px;
+  font-size: 11px;
+  color: #858585;
+  z-index: 100;
+}
+
+.footer-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.footer-sync {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 4px;
+  cursor: default;
+}
+
+.sync-icon {
+  font-size: 12px;
+  line-height: 1;
+}
+
+.sync-text {
+  font-size: 11px;
+  line-height: 1;
+}
+
+/* Status colors matching VSCode */
+.footer-sync.syncing {
+  color: #569cd6;
+}
+
+.footer-sync.syncing .sync-icon {
+  animation: spin 1s linear infinite;
+}
+
+.footer-sync.synced {
+  color: #4ec9b0;
+}
+
+.footer-sync.error {
+  color: #f48771;
+}
+
+.footer-sync.idle {
+  color: #858585;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
