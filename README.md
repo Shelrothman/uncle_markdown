@@ -77,7 +77,7 @@ Copy `.env.example` to `.env.local` and add your GitHub OAuth Client ID:
 
 ```bash
 cp .env.example .env.local
-# Edit .env.local and add your GitHub Client ID
+# Edit .env.local and add your GitHub Client ID and Secret
 ```
 
 ### Available Scripts
@@ -86,6 +86,18 @@ cp .env.example .env.local
 - `pnpm build` - Build for production
 - `pnpm preview` - Preview production build
 - `pnpm lint` - Run ESLint
+
+## Deployment
+
+Deploy to Vercel for free hosting with OAuth support:
+
+```bash
+npm i -g vercel
+vercel login
+vercel
+```
+
+See `DEPLOYMENT.md` for detailed deployment instructions.
 
 ## Technologies Used
 
