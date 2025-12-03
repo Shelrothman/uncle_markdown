@@ -47,6 +47,10 @@
 - [x] Add VSCode-style footer with sync status indicators
 - [x] Implement sidebar toggle functionality
 - [x] Add gradient headers for code blocks with copy button
+- [x] Implement line-by-line WYSIWYG editor (MarkText-style)
+- [x] Add line numbers to editor
+- [x] Add keyboard navigation (Enter, Backspace, Arrow keys, Escape)
+- [x] Add blockquote styling (GitHub-style with left border)
 
 ## ⏳ Pending (Requires Backend)
 
@@ -66,9 +70,9 @@
 - [ ] Add keyboard shortcuts (Cmd+S, Cmd+N, Cmd+P, etc.)
 - [ ] Implement file search (Cmd+P)
 - [ ] Implement content search (Cmd+Shift+F)
-- [ ] Add true WYSIWYG mode (hide markdown syntax, show only formatting)
 - [ ] Add drag-and-drop file reorganization
 - [ ] Add image upload and embedding
+- [ ] Improve WYSIWYG mode (hide more markdown syntax like headers)
 
 ### Priority 2
 - [ ] Export functionality (download as .md, PDF, HTML)
@@ -116,7 +120,7 @@
 - [x] Color highlights (`red:text`, `blue:text`, etc.)
 - [x] Links
 - [ ] Images
-- [x] Blockquotes
+- [x] Blockquotes (with GitHub-style left border)
 - [ ] Tables
 - [x] Horizontal rules
 - [ ] GitHub Flavored Markdown (strikethrough, task lists, etc.)

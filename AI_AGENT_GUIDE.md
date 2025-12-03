@@ -45,8 +45,12 @@ uncle_markdown/
 - ✅ **GitHub OAuth & Sync**: Fully implemented with Vercel serverless backend
 - ✅ **Auto-Sync**: Files automatically sync to GitHub every 10 seconds with retry logic
 - ✅ **File Deletions**: Deletions are now properly synced to GitHub repository
+- ✅ **Line-by-Line WYSIWYG Editor**: MarkText-style editing where clicking a line shows raw markdown
+- ✅ **Line Numbers**: Editor displays line numbers like VSCode
+- ✅ **Keyboard Navigation**: Enter (new line), Backspace (merge), Arrow keys (navigate), Escape (exit edit)
 - ✅ **Inline Code Styling**: VSCode-style inline code with amber color (#e8ab53)
 - ✅ **Color Highlights**: Support for `red:text`, `blue:text`, etc. syntax
+- ✅ **Blockquote Styling**: GitHub-style blockquotes with left border and proper spacing
 - ✅ **Footer Status Bar**: VSCode-style footer showing sync status
 - ✅ **Code Block Headers**: Gradient headers with language labels and copy buttons
 
@@ -85,13 +89,28 @@ uncle_markdown/
 - Modal dialogs for new file/folder creation
 
 #### Editor (Editor.tsx)
-- Split-pane layout: textarea (left) + markdown preview (right)
-- Auto-save: 500ms debounce after typing stops
-- Live preview using react-markdown with GFM support
-- Inline code rendering: VSCode-style with amber color (#e8ab53)
-- Color highlight syntax: `red:text`, `blue:text`, `green:text`, etc.
-- Code blocks: Gradient headers with language labels and copy buttons
-- Syntax highlighting and sanitization for security
+- **Line-by-Line WYSIWYG**: MarkText-style editing where each line can be edited independently
+  - Click on a line to edit raw markdown
+  - Click away or blur to render the preview
+  - Line numbers displayed on the left (50px width, gray color)
+- **Keyboard Navigation**:
+  - Enter: Create new line below and focus it
+  - Backspace (at line start): Merge with previous line
+  - Arrow Up/Down: Navigate between lines
+  - Escape: Exit edit mode and return to preview
+- **Performance Optimizations**:
+  - Memoized LinePreview component with React.memo
+  - useCallback for all event handlers
+  - useMemo for lines array
+  - requestAnimationFrame for smooth focus transitions
+  - CSS contain and will-change properties
+- **Auto-save**: 500ms debounce after typing stops
+- **Markdown Features**:
+  - Inline code rendering: VSCode-style with amber color (#e8ab53)
+  - Color highlight syntax: `red:text`, `blue:text`, `green:text`, etc.
+  - Code blocks: Gradient headers with language labels and copy buttons
+  - Blockquotes: GitHub-style with left border (#4ec9b0) and italic text
+  - Syntax highlighting and sanitization for security
 
 #### Header (Header.tsx)
 - App title branding
@@ -241,19 +260,21 @@ pnpm preview  # Preview production build
 - [ ] Test GitHub login (after OAuth setup)
 
 ### Known Limitations
-1. **WYSIWYG Mode**: Currently shows split view (editor + preview), not true WYSIWYG with hidden markdown characters
+1. **WYSIWYG Mode**: Line-by-line editing implemented, but some markdown syntax still visible (e.g., headers show `#`)
 2. **File Upload**: No image upload functionality yet
 3. **Search**: No file search or content search yet
 4. **Sync Direction**: Push-only to GitHub (no pull/sync-down yet)
 5. **Conflict Resolution**: No handling for concurrent edits from multiple devices
+6. **Large Files**: Line-by-line rendering may impact performance with files >1000 lines
 
 ## Future Enhancements (TODO)
 
 ### Priority 1: Core Functionality
 - [ ] Implement sync-down from GitHub (currently push-only)
 - [ ] Add conflict resolution for concurrent edits
-- [ ] Implement true WYSIWYG editor (hide markdown syntax, show only formatting)
+- [ ] Enhance WYSIWYG editor (hide more syntax like `#` for headers, `**` for bold)
 - [ ] Add keyboard shortcuts (Cmd+S to save, Cmd+N for new file, etc.)
+- [ ] Optimize line-by-line rendering for large files (virtual scrolling)
 
 ### Priority 2: User Experience
 - [ ] File search functionality (Cmd+P)
@@ -373,5 +394,5 @@ When modifying this codebase:
 ---
 
 **Last Updated**: December 3, 2025
-**Version**: 1.1.0
-**Status**: Production Ready - Full GitHub integration with auto-sync
+**Version**: 1.2.0
+**Status**: Production Ready - Full GitHub integration with line-by-line WYSIWYG editor

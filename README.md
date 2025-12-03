@@ -7,12 +7,15 @@ A modern, VSCode-inspired markdown editor with GitHub integration. Create, edit,
 ## Features
 
 - 📁 **File Tree Sidebar**: Organize files and folders just like VSCode
-- ✏️ **Live Preview**: See markdown rendered in real-time as you type
+- ✏️ **Line-by-Line WYSIWYG Editor**: MarkText-style editing - click to edit, click away to preview
+- 🔢 **Line Numbers**: VSCode-style line numbers for easy navigation
+- ⌨️ **Keyboard Navigation**: Enter, Backspace, Arrow keys, and Escape for efficient editing
 - 💾 **Local Auto-Save**: Your work is automatically saved to browser storage every 500ms
 - ☁️ **GitHub Auto-Sync**: Files automatically sync to GitHub every 10 seconds after changes
 - 🎨 **VSCode Dark Theme**: Classic green and black color scheme with gradient code blocks
 - 💅 **Inline Code Styling**: VSCode-style inline code with amber color highlighting
 - 🌈 **Color Highlights**: Special syntax for colored text (`red:important`, `blue:note`, etc.)
+- 💬 **GitHub-Style Blockquotes**: Beautiful blockquote rendering with left border
 - 🔐 **GitHub OAuth Integration**: Secure login with GitHub to auto-create a private repository
 - 🔄 **Smart Retry Logic**: Automatic retry with exponential backoff for sync conflicts
 - 📊 **Sync Status Indicator**: Visual footer showing sync status (VSCode-style)
@@ -42,11 +45,16 @@ pnpm build
 ### Editing Markdown
 
 1. Click on a file in the sidebar to open it
-2. Type your markdown in the left pane
-3. See the live preview in the right pane
-4. Your changes are auto-saved to localStorage after 500ms
-5. After 10 seconds of inactivity, files sync to GitHub automatically
-6. Check the footer for sync status
+2. Click on any line to edit the raw markdown
+3. Click away or press Escape to see the rendered preview
+4. Use keyboard shortcuts:
+   - **Enter**: Create a new line below
+   - **Backspace** (at line start): Merge with previous line
+   - **Arrow Up/Down**: Navigate between lines
+   - **Escape**: Exit edit mode
+5. Your changes are auto-saved to localStorage after 500ms
+6. After 10 seconds of inactivity, files sync to GitHub automatically
+7. Check the footer for sync status
 
 **Special Markdown Features**:
 - **Inline Code**: Use single backticks for inline code with VSCode-style amber highlighting: `like this`
