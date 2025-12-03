@@ -9,16 +9,23 @@ interface GitHubUser {
   email: string;
 }
 
+type SyncStatus = 'idle' | 'syncing' | 'synced' | 'error';
+
 interface AuthStore {
   accessToken: string | null;
   user: GitHubUser | null;
   octokit: Octokit | null;
   repoName: string | null;
+  syncStatus: SyncStatus;
+  lastSyncTime: number | null;
+  syncError: string | null;
   
   setAuth: (token: string, user: GitHubUser) => void;
   logout: () => void;
   setRepoName: (name: string) => void;
   createRepository: () => Promise<void>;
+  setSyncStatus: (status: SyncStatus, error?: string) => void;
+  setLastSyncTime: (time: number) => void;
 }
 
 export const useAuthStore = create<AuthStore>()(
@@ -28,6 +35,9 @@ export const useAuthStore = create<AuthStore>()(
       user: null,
       octokit: null,
       repoName: null,
+      syncStatus: 'idle',
+      lastSyncTime: null,
+      syncError: null,
 
       setAuth: (token, user) => {
         const octokit = new Octokit({ auth: token });
@@ -35,11 +45,27 @@ export const useAuthStore = create<AuthStore>()(
       },
 
       logout: () => {
-        set({ accessToken: null, user: null, octokit: null, repoName: null });
+        set({ 
+          accessToken: null, 
+          user: null, 
+          octokit: null, 
+          repoName: null,
+          syncStatus: 'idle',
+          lastSyncTime: null,
+          syncError: null
+        });
       },
 
       setRepoName: (name) => {
         set({ repoName: name });
+      },
+
+      setSyncStatus: (status, error) => {
+        set({ syncStatus: status, syncError: error || null });
+      },
+
+      setLastSyncTime: (time) => {
+        set({ lastSyncTime: time });
       },
 
       createRepository: async () => {

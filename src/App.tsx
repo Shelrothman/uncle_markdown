@@ -2,10 +2,14 @@ import { useState } from 'react'
 import Header from './components/Header'
 import Sidebar from './components/Sidebar'
 import Editor from './components/Editor'
+import { useAutoSync } from './hooks/useAutoSync'
 import './App.css'
 
 function App() {
   const [sidebarVisible, setSidebarVisible] = useState(true)
+  
+  // Enable auto-sync to GitHub
+  useAutoSync()
 
   return (
     <div className="app">
