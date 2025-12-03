@@ -110,11 +110,27 @@ const Editor: React.FC = () => {
                 components={{
                   // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
                   code: ({ node, inline, className, children, ...props }: any) => {
-                    return !inline ? (
-                      <CodeBlock className={className}>{children}</CodeBlock>
-                    ) : (
-                      <code className={className} {...props}>{children}</code>
-                    );
+                    // Force inline detection based on parent node
+                    const isInline = inline !== false && !className?.includes('language-');
+                    
+                    if (!isInline) {
+                      return <CodeBlock className={className}>{children}</CodeBlock>;
+                    }
+                    
+                    // Handle color syntax: `red:text` or `blue:text`
+                    const text = String(children).trim();
+                    const colorMatch = text.match(/^(red|green|blue|yellow|purple|orange):(.*?)$/);
+                    
+                    if (colorMatch) {
+                      const [, color, content] = colorMatch;
+                      return (
+                        <code className={`highlight-${color} ${className || ''}`} {...props}>
+                          {content}
+                        </code>
+                      );
+                    }
+                    
+                    return <code className={className} {...props}>{children}</code>;
                   }
                 }}
               >
