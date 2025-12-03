@@ -31,13 +31,13 @@ function flattenFileTree(nodes: FileNode[], parentPath: string = ''): Array<{ pa
 }
 
 /**
- * Gets the SHA of the default branch
+ * Gets the SHA of the default branch and its tree
  */
-async function getDefaultBranchSHA(
+async function getDefaultBranchInfo(
   octokit: Octokit,
   owner: string,
   repo: string
-): Promise<string | null> {
+): Promise<{ commitSHA: string; treeSHA: string } | null> {
   try {
     const { data } = await octokit.repos.get({ owner, repo });
     const defaultBranch = data.default_branch || 'main';
@@ -48,9 +48,21 @@ async function getDefaultBranchSHA(
       ref: `heads/${defaultBranch}`,
     });
 
-    return refData.object.sha;
+    const commitSHA = refData.object.sha;
+    
+    // Get the commit to find its tree SHA
+    const { data: commitData } = await octokit.git.getCommit({
+      owner,
+      repo,
+      commit_sha: commitSHA,
+    });
+
+    return {
+      commitSHA,
+      treeSHA: commitData.tree.sha,
+    };
   } catch (error) {
-    console.error('Failed to get default branch SHA:', error);
+    console.error('Failed to get default branch info:', error);
     return null;
   }
 }
@@ -132,6 +144,7 @@ async function updateBranchRef(
       repo,
       ref: `heads/${defaultBranch}`,
       sha: commitSHA,
+      force: false, // Ensure we don't force push
     });
 
     return true;
@@ -158,21 +171,26 @@ export async function syncToGitHub(
       return { success: true }; // Nothing to sync
     }
 
-    // Get current branch SHA
-    const baseSHA = await getDefaultBranchSHA(octokit, owner, repo);
-    if (!baseSHA) {
+    // Get current branch info (commit SHA and tree SHA)
+    const branchInfo = await getDefaultBranchInfo(octokit, owner, repo);
+    if (!branchInfo) {
       return { success: false, error: 'Failed to get branch reference' };
     }
 
     // Create tree
-    const treeSHA = await createGitTree(octokit, owner, repo, flatFiles, baseSHA);
+    const treeSHA = await createGitTree(octokit, owner, repo, flatFiles, branchInfo.treeSHA);
     if (!treeSHA) {
       return { success: false, error: 'Failed to create tree' };
     }
 
+    // Check if tree changed
+    if (treeSHA === branchInfo.treeSHA) {
+      return { success: true }; // No changes to commit
+    }
+
     // Create commit
     const commitMessage = `Update notes - ${new Date().toISOString()}`;
-    const commitSHA = await createCommit(octokit, owner, repo, treeSHA, baseSHA, commitMessage);
+    const commitSHA = await createCommit(octokit, owner, repo, treeSHA, branchInfo.commitSHA, commitMessage);
     if (!commitSHA) {
       return { success: false, error: 'Failed to create commit' };
     }
