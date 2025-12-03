@@ -17,11 +17,11 @@ const Editor: React.FC = () => {
   const editorRef = useRef<HTMLDivElement>(null);
 
   // Update local content when active file changes
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     setLocalContent(activeFile?.content || '');
     setIsEditing(false);
     // We intentionally sync state here when file changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeFile?.id]);
 
   // Only restore focus, not cursor position (let user click where they want)
@@ -108,6 +108,7 @@ const Editor: React.FC = () => {
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={[rehypeRaw, rehypeSanitize]}
                 components={{
+                  // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
                   code: ({ node, inline, className, children, ...props }: any) => {
                     return !inline ? (
                       <CodeBlock className={className}>{children}</CodeBlock>
