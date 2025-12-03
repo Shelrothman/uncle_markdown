@@ -11,7 +11,7 @@ const SYNC_DELAY = 10000; // 10 seconds
 export function useAutoSync() {
   const files = useFileStore((state) => state.files);
   const { octokit, user, repoName, setSyncStatus, setLastSyncTime } = useAuthStore();
-  const syncTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const syncTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const filesRef = useRef(files);
 
   // Update ref when files change

@@ -1,5 +1,5 @@
 import { Octokit } from '@octokit/rest';
-import { FileNode } from '../store/fileStore';
+import type { FileNode } from '../store/fileStore';
 
 interface SyncResult {
   success: boolean;
