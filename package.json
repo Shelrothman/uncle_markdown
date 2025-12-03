@@ -11,9 +11,9 @@
   },
   "dependencies": {
     "@octokit/rest": "^22.0.1",
-    "react": "^19.2.0",
+    "react": "^19.2.1",
     "react-contenteditable": "^3.3.7",
-    "react-dom": "^19.2.0",
+    "react-dom": "^19.2.1",
     "react-markdown": "^10.1.0",
     "rehype-raw": "^7.0.0",
     "rehype-sanitize": "^6.0.0",
