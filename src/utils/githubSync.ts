@@ -113,8 +113,14 @@ async function createGitTree(
     const existingFiles = await getExistingFiles(octokit, owner, repo, baseSHA);
     const currentFiles = new Set(files.map(f => f.path));
 
-    // Create tree entries for current files
-    const tree = files.map((file) => ({
+    // Create tree entries for current files and deletions
+    const tree: Array<{
+      path: string;
+      mode: '100644';
+      type: 'blob';
+      content?: string;
+      sha?: string | null;
+    }> = files.map((file) => ({
       path: file.path,
       mode: '100644' as const,
       type: 'blob' as const,
@@ -128,7 +134,7 @@ async function createGitTree(
           path: existingPath,
           mode: '100644' as const,
           type: 'blob' as const,
-          sha: null as any, // null sha means delete
+          sha: null, // null sha means delete
         });
       }
     }
