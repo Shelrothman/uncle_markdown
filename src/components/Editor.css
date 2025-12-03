@@ -213,6 +213,20 @@
   border-color: rgba(206, 145, 120, 0.3);
 }
 
+/* Blockquote styling for line preview */
+.line-preview blockquote {
+  border-left: 4px solid #4ec9b0;
+  padding-left: 10px !important;
+  margin-left: 0;
+  color: #9d9d9d;
+  font-style: italic;
+}
+
+.line-preview blockquote p {
+  display: inline;
+  margin: 0 !important;
+}
+
 /* Old full-document preview styles (kept for backwards compatibility) */
 .wysiwyg-preview h1 {
   color: #4ec9b0;
