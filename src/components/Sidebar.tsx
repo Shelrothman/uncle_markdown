@@ -75,7 +75,10 @@ const Sidebar: React.FC<SidebarProps> = ({ onToggleSidebar }) => {
               toggleFolder(node.id);
             }
           }}
-          onContextMenu={(e) => handleContextMenu(e, node.id)}
+          onContextMenu={(e) => {
+            e.stopPropagation();
+            handleContextMenu(e, node.id);
+          }}
         >
           <span className="file-icon">
             {node.type === 'folder' ? (isExpanded ? '📂' : '📁') : '📄'}
@@ -131,15 +134,27 @@ const Sidebar: React.FC<SidebarProps> = ({ onToggleSidebar }) => {
           style={{ top: contextMenu.y, left: contextMenu.x }}
           onMouseLeave={() => setContextMenu(null)}
         >
-          <div className="context-menu-item" onClick={() => handleNewFile(contextMenu.nodeId)}>
-            New File
-          </div>
-          <div className="context-menu-item" onClick={() => handleNewFolder(contextMenu.nodeId)}>
-            New Folder
-          </div>
-          {contextMenu.nodeId && (
+          {/* Show New File/Folder options based on context */}
+          {contextMenu.nodeId ? (
+            // Right-clicked on a node
             <>
-              <div className="context-menu-divider" />
+              {(() => {
+                const node = useFileStore.getState().getNodeById(contextMenu.nodeId!);
+                if (node?.type === 'folder') {
+                  return (
+                    <>
+                      <div className="context-menu-item" onClick={() => handleNewFile(contextMenu.nodeId)}>
+                        New File
+                      </div>
+                      <div className="context-menu-item" onClick={() => handleNewFolder(contextMenu.nodeId)}>
+                        New Folder
+                      </div>
+                      <div className="context-menu-divider" />
+                    </>
+                  );
+                }
+                return null;
+              })()}
               <div className="context-menu-item" onClick={() => {
                 const node = useFileStore.getState().getNodeById(contextMenu.nodeId!);
                 if (node) handleRename(contextMenu.nodeId!, node.name);
@@ -148,6 +163,16 @@ const Sidebar: React.FC<SidebarProps> = ({ onToggleSidebar }) => {
               </div>
               <div className="context-menu-item danger" onClick={() => handleDelete(contextMenu.nodeId!)}>
                 Delete
+              </div>
+            </>
+          ) : (
+            // Right-clicked on empty space
+            <>
+              <div className="context-menu-item" onClick={() => handleNewFile(null)}>
+                New File
+              </div>
+              <div className="context-menu-item" onClick={() => handleNewFolder(null)}>
+                New Folder
               </div>
             </>
           )}
