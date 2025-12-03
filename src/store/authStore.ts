@@ -9,8 +9,6 @@ interface GitHubUser {
   email: string;
 }
 
-type SyncStatus = 'idle' | 'syncing' | 'synced' | 'error';
-
 interface AuthStore {
   accessToken: string | null;
   user: GitHubUser | null;
@@ -26,6 +24,7 @@ interface AuthStore {
   createRepository: () => Promise<void>;
   setSyncStatus: (status: SyncStatus, error?: string) => void;
   setLastSyncTime: (time: number) => void;
+  getOctokit: () => Octokit | null;
 }
 
 export const useAuthStore = create<AuthStore>()(
@@ -68,6 +67,20 @@ export const useAuthStore = create<AuthStore>()(
         set({ lastSyncTime: time });
       },
 
+      getOctokit: () => {
+        const state = get();
+        if (!state.accessToken) return null;
+        
+        // Recreate octokit if it doesn't exist
+        if (!state.octokit) {
+          const octokit = new Octokit({ auth: state.accessToken });
+          set({ octokit });
+          return octokit;
+        }
+        
+        return state.octokit;
+      },
+
       createRepository: async () => {
         const { octokit, user, repoName } = get();
         if (!octokit || !user) return;
@@ -89,7 +102,16 @@ export const useAuthStore = create<AuthStore>()(
       }
     }),
     {
-      name: 'uncle-markdown-auth'
+      name: 'uncle-markdown-auth',
+      partialize: (state) => ({
+        accessToken: state.accessToken,
+        user: state.user,
+        repoName: state.repoName,
+        syncStatus: state.syncStatus,
+        lastSyncTime: state.lastSyncTime,
+        syncError: state.syncError,
+        // Exclude octokit - it will be recreated from token
+      }),
     }
   )
 );

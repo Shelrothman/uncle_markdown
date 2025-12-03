@@ -19,12 +19,13 @@ const Header: React.FC = () => {
     syncError,
     setSyncStatus,
     setLastSyncTime,
-    octokit,
+    getOctokit,
     repoName
   } = useAuthStore();
   const files = useFileStore((state) => state.files);
 
   const handleManualSync = async () => {
+    const octokit = getOctokit();
     if (!octokit || !user || !repoName) return;
     
     setSyncStatus('syncing');
