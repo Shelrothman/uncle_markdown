@@ -232,7 +232,7 @@ const Editor: React.FC = () => {
               <div className="line-number">1</div>
               <div className="line-content">
                 <textarea
-                  ref={(el) => (lineRefs.current[0] = el)}
+                  ref={(el) => { lineRefs.current[0] = el; }}
                   value=""
                   onChange={(e) => handleLineChange(0, e.target.value)}
                   onBlur={() => handleLineBlur(0)}
@@ -254,7 +254,7 @@ const Editor: React.FC = () => {
                 <div className="line-content">
                   {editingLine === index ? (
                     <textarea
-                      ref={(el) => (lineRefs.current[index] = el)}
+                      ref={(el) => { lineRefs.current[index] = el; }}
                       value={line}
                       onChange={(e) => handleLineChange(index, e.target.value)}
                       onBlur={() => handleLineBlur(index)}
