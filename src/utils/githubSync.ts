@@ -68,7 +68,38 @@ async function getDefaultBranchInfo(
 }
 
 /**
- * Creates a tree with all files
+ * Gets all files currently in the repository tree
+ */
+async function getExistingFiles(
+  octokit: Octokit,
+  owner: string,
+  repo: string,
+  treeSHA: string
+): Promise<Set<string>> {
+  try {
+    const { data } = await octokit.git.getTree({
+      owner,
+      repo,
+      tree_sha: treeSHA,
+      recursive: 'true',
+    });
+
+    const existingPaths = new Set<string>();
+    for (const item of data.tree) {
+      if (item.type === 'blob' && item.path) {
+        existingPaths.add(item.path);
+      }
+    }
+
+    return existingPaths;
+  } catch (error) {
+    console.error('Failed to get existing files:', error);
+    return new Set();
+  }
+}
+
+/**
+ * Creates a tree with all files, including deletions
  */
 async function createGitTree(
   octokit: Octokit,
@@ -78,12 +109,29 @@ async function createGitTree(
   baseSHA: string
 ): Promise<string | null> {
   try {
+    // Get existing files to determine what needs to be deleted
+    const existingFiles = await getExistingFiles(octokit, owner, repo, baseSHA);
+    const currentFiles = new Set(files.map(f => f.path));
+
+    // Create tree entries for current files
     const tree = files.map((file) => ({
       path: file.path,
       mode: '100644' as const,
       type: 'blob' as const,
       content: file.content,
     }));
+
+    // Add deletion entries for files that exist in repo but not locally
+    for (const existingPath of existingFiles) {
+      if (!currentFiles.has(existingPath)) {
+        tree.push({
+          path: existingPath,
+          mode: '100644' as const,
+          type: 'blob' as const,
+          sha: null as any, // null sha means delete
+        });
+      }
+    }
 
     const { data } = await octokit.git.createTree({
       owner,
