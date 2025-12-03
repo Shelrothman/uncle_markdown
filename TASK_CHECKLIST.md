@@ -41,16 +41,24 @@
 - [x] Handle errors properly
 - [x] Add ESLint suppression comments where appropriate
 
+### UI/UX Enhancements
+- [x] Implement inline code rendering (VSCode-style with amber color)
+- [x] Add color highlight syntax (`red:text`, `blue:text`, etc.)
+- [x] Add VSCode-style footer with sync status indicators
+- [x] Implement sidebar toggle functionality
+- [x] Add gradient headers for code blocks with copy button
+
 ## ⏳ Pending (Requires Backend)
 
 ### GitHub Integration
-- [ ] Create backend service for OAuth token exchange
-- [ ] Implement token exchange API endpoint
-- [ ] Update Header.tsx to call backend API
-- [ ] Test complete OAuth flow
-- [ ] Implement file syncing to GitHub repository
-- [ ] Add commit functionality
-- [ ] Add push/pull for multi-device sync
+- [x] Create backend service for OAuth token exchange (Vercel serverless)
+- [x] Implement token exchange API endpoint (/api/auth.js)
+- [x] Update Header.tsx to call backend API
+- [x] Test complete OAuth flow
+- [x] Implement file syncing to GitHub repository (auto-sync with 10s debounce)
+- [x] Add commit functionality (automatic)
+- [x] Handle file deletions in sync
+- [ ] Add pull/sync-down for multi-device sync (currently push-only)
 
 ## 🚀 Future Enhancements
 
@@ -100,16 +108,17 @@
 - [ ] Test file sync (after implementation)
 
 ### Markdown Features to Test
-- [ ] Headers (H1-H6)
-- [ ] Bold and italic
-- [ ] Lists (ordered and unordered)
-- [ ] Code blocks
-- [ ] Inline code
-- [ ] Links
+- [x] Headers (H1-H6)
+- [x] Bold and italic
+- [x] Lists (ordered and unordered)
+- [x] Code blocks (with gradient headers and copy button)
+- [x] Inline code (VSCode-style rendering)
+- [x] Color highlights (`red:text`, `blue:text`, etc.)
+- [x] Links
 - [ ] Images
-- [ ] Blockquotes
+- [x] Blockquotes
 - [ ] Tables
-- [ ] Horizontal rules
+- [x] Horizontal rules
 - [ ] GitHub Flavored Markdown (strikethrough, task lists, etc.)
 
 ## 📝 Next Immediate Steps
@@ -139,11 +148,11 @@
 
 ## 🐛 Known Issues
 
-- GitHub OAuth requires backend implementation (documented in GITHUB_OAUTH_SETUP.md)
-- File sync not yet implemented (files only stored in localStorage)
 - No keyboard shortcuts yet
 - No search functionality yet
 - No true WYSIWYG mode (shows markdown syntax)
+- Sync is push-only (no pull/sync-down from GitHub)
+- No conflict resolution for concurrent edits
 
 ## 📚 Resources
 

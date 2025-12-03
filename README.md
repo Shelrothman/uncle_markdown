@@ -11,6 +11,8 @@ A modern, VSCode-inspired markdown editor with GitHub integration. Create, edit,
 - 💾 **Local Auto-Save**: Your work is automatically saved to browser storage every 500ms
 - ☁️ **GitHub Auto-Sync**: Files automatically sync to GitHub every 10 seconds after changes
 - 🎨 **VSCode Dark Theme**: Classic green and black color scheme with gradient code blocks
+- 💅 **Inline Code Styling**: VSCode-style inline code with amber color highlighting
+- 🌈 **Color Highlights**: Special syntax for colored text (`red:important`, `blue:note`, etc.)
 - 🔐 **GitHub OAuth Integration**: Secure login with GitHub to auto-create a private repository
 - 🔄 **Smart Retry Logic**: Automatic retry with exponential backoff for sync conflicts
 - 📊 **Sync Status Indicator**: Visual footer showing sync status (VSCode-style)
@@ -45,6 +47,16 @@ pnpm build
 4. Your changes are auto-saved to localStorage after 500ms
 5. After 10 seconds of inactivity, files sync to GitHub automatically
 6. Check the footer for sync status
+
+**Special Markdown Features**:
+- **Inline Code**: Use single backticks for inline code with VSCode-style amber highlighting: `like this`
+- **Color Highlights**: Add color to important text:
+  - `red:important` → <span style="color: #f48771">red text</span>
+  - `blue:note` → <span style="color: #569cd6">blue text</span>
+  - `green:success` → <span style="color: #4ec9b0">green text</span>
+  - `yellow:warning` → <span style="color: #dcdcaa">yellow text</span>
+  - Also supports: `purple:`, `orange:`
+- **Code Blocks**: Triple backticks create beautiful code blocks with gradient headers, language labels, and copy buttons
 
 ### File Operations
 
@@ -105,12 +117,16 @@ uncle_markdown/
 
 ### Environment Variables
 
-Copy `.env.example` to `.env.local` and add your GitHub OAuth Client ID:
+For GitHub OAuth to work, you need to set up environment variables:
 
 ```bash
 cp .env.example .env.local
-# Edit .env.local and add your GitHub Client ID and Secret
+# Edit .env.local and add:
+# VITE_GITHUB_CLIENT_ID=your_client_id
+# GITHUB_CLIENT_SECRET=your_client_secret
 ```
+
+See `DEPLOYMENT.md` for detailed setup instructions.
 
 ### Available Scripts
 
@@ -144,12 +160,18 @@ vercel
 ## For AI Agents & Developers
 
 See `AI_AGENT_GUIDE.md` for comprehensive documentation on:
+- Recent updates and features
 - Architecture decisions
 - Component structure
 - State management patterns
-- GitHub OAuth setup
+- GitHub OAuth and auto-sync implementation
 - Development workflows
 - Future enhancements
+
+See `DEPLOYMENT.md` for:
+- Vercel deployment instructions
+- Environment variable setup
+- GitHub OAuth app configuration
 
 ## License
 

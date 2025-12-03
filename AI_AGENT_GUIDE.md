@@ -40,6 +40,16 @@ uncle_markdown/
 └── .env.example                # Environment variables template
 ```
 
+## Recent Updates (December 2025)
+
+- ✅ **GitHub OAuth & Sync**: Fully implemented with Vercel serverless backend
+- ✅ **Auto-Sync**: Files automatically sync to GitHub every 10 seconds with retry logic
+- ✅ **File Deletions**: Deletions are now properly synced to GitHub repository
+- ✅ **Inline Code Styling**: VSCode-style inline code with amber color (#e8ab53)
+- ✅ **Color Highlights**: Support for `red:text`, `blue:text`, etc. syntax
+- ✅ **Footer Status Bar**: VSCode-style footer showing sync status
+- ✅ **Code Block Headers**: Gradient headers with language labels and copy buttons
+
 ## Core Features
 
 ### 1. File Management (fileStore.ts)
@@ -58,9 +68,11 @@ uncle_markdown/
 - **GitHub OAuth Flow**:
   1. User clicks "Login with GitHub" → redirects to GitHub OAuth
   2. GitHub redirects back with `code` parameter
-  3. Exchange code for access token (requires backend - see GitHub Setup)
+  3. Exchange code for access token via `/api/auth` serverless function
   4. Store token and initialize Octokit client
 - **Auto-Repository Creation**: Automatically creates a GitHub repo named `uncle-markdown-notes` when user logs in
+- **Auto-Sync**: Files automatically sync to GitHub every 10 seconds (with debounce)
+- **Sync Status**: Footer displays sync status (syncing, synced, error, idle)
 - **Persistence**: Stores auth state in localStorage key `uncle-markdown-auth`
 
 ### 3. UI Components
@@ -76,12 +88,23 @@ uncle_markdown/
 - Split-pane layout: textarea (left) + markdown preview (right)
 - Auto-save: 500ms debounce after typing stops
 - Live preview using react-markdown with GFM support
+- Inline code rendering: VSCode-style with amber color (#e8ab53)
+- Color highlight syntax: `red:text`, `blue:text`, `green:text`, etc.
+- Code blocks: Gradient headers with language labels and copy buttons
 - Syntax highlighting and sanitization for security
 
 #### Header (Header.tsx)
 - App title branding
 - GitHub login/logout
 - User avatar and username display
+
+#### Footer (Footer.tsx)
+- VSCode-style status bar (22px height)
+- Sync status indicators:
+  - 🔄 Syncing... (blue)
+  - ✓ Synced (green)
+  - ✗ Error (red)
+  - ⊙ Idle (gray)
 
 ### 4. Design System
 
@@ -120,45 +143,38 @@ pnpm preview  # Preview production build
 
 ## GitHub OAuth Setup
 
-**Required for Login Feature**:
+**✅ FULLY IMPLEMENTED**:
 
 1. **Create GitHub OAuth App**:
    - Go to GitHub Settings → Developer settings → OAuth Apps → New OAuth App
    - Application name: `Uncle Markdown`
-   - Homepage URL: `http://localhost:5173` (dev) or your production URL
+   - Homepage URL: Your production URL (e.g., `https://uncle-markdown.vercel.app`)
    - Authorization callback URL: Same as homepage URL
    - Click "Register application"
-   - Copy the Client ID
+   - Copy the Client ID and generate Client Secret
 
-2. **Set Environment Variable**:
+2. **Set Environment Variables**:
    ```bash
-   cp .env.example .env.local
-   # Edit .env.local and add your GitHub Client ID
+   # For local development (.env.local)
+   VITE_GITHUB_CLIENT_ID=your_client_id
+   GITHUB_CLIENT_SECRET=your_client_secret
+   
+   # For Vercel (via dashboard or CLI)
+   vercel env add VITE_GITHUB_CLIENT_ID
+   vercel env add GITHUB_CLIENT_SECRET
    ```
 
-3. **Backend for Token Exchange** (TODO):
-   - GitHub doesn't allow client-side token exchange for security
-   - Need to create a simple backend endpoint:
-     ```
-     POST /api/github/token
-     Body: { code: "..." }
-     Response: { access_token: "..." }
-     ```
-   - Backend exchanges code for token using Client Secret
-   - Frontend receives token and calls `setAuth(token, userData)`
+3. **Backend (Vercel Serverless)**:
+   - Already implemented in `/api/auth.js`
+   - Exchanges code for token using Client Secret
+   - Returns access token and user data to frontend
+   - Endpoint: `POST /api/auth`
 
-4. **Update Header.tsx**:
-   - Implement token exchange API call in `useEffect` when code is received
-   - Example:
-     ```typescript
-     const response = await fetch('/api/github/token', {
-       method: 'POST',
-       body: JSON.stringify({ code }),
-       headers: { 'Content-Type': 'application/json' }
-     });
-     const { access_token } = await response.json();
-     // Fetch user data and call setAuth
-     ```
+4. **Auto-Sync Implementation**:
+   - Files sync automatically every 10 seconds (debounced)
+   - Handles file additions, updates, and deletions
+   - Retry logic with exponential backoff for race conditions
+   - Status displayed in footer
 
 ## Common Development Tasks
 
@@ -225,17 +241,17 @@ pnpm preview  # Preview production build
 - [ ] Test GitHub login (after OAuth setup)
 
 ### Known Limitations
-1. **GitHub OAuth**: Requires backend for production use
-2. **File Sync**: GitHub repo creation works, but auto-sync of file changes not yet implemented
-3. **WYSIWYG Mode**: Currently shows split view (editor + preview), not true WYSIWYG with hidden markdown characters
-4. **File Upload**: No image upload functionality yet
-5. **Search**: No file search or content search yet
+1. **WYSIWYG Mode**: Currently shows split view (editor + preview), not true WYSIWYG with hidden markdown characters
+2. **File Upload**: No image upload functionality yet
+3. **Search**: No file search or content search yet
+4. **Sync Direction**: Push-only to GitHub (no pull/sync-down yet)
+5. **Conflict Resolution**: No handling for concurrent edits from multiple devices
 
 ## Future Enhancements (TODO)
 
 ### Priority 1: Core Functionality
-- [ ] Implement GitHub file sync (commit files on save)
-- [ ] Add backend for secure OAuth token exchange
+- [ ] Implement sync-down from GitHub (currently push-only)
+- [ ] Add conflict resolution for concurrent edits
 - [ ] Implement true WYSIWYG editor (hide markdown syntax, show only formatting)
 - [ ] Add keyboard shortcuts (Cmd+S to save, Cmd+N for new file, etc.)
 
@@ -356,6 +372,6 @@ When modifying this codebase:
 
 ---
 
-**Last Updated**: December 2, 2025
-**Version**: 1.0.0
-**Status**: MVP Complete, GitHub Integration Requires Backend
+**Last Updated**: December 3, 2025
+**Version**: 1.1.0
+**Status**: Production Ready - Full GitHub integration with auto-sync
