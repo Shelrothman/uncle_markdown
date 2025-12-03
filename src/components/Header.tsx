@@ -20,7 +20,8 @@ const Header: React.FC = () => {
     setSyncStatus,
     setLastSyncTime,
     getOctokit,
-    repoName
+    repoName,
+    autoSyncPending
   } = useAuthStore();
   const files = useFileStore((state) => state.files);
 
@@ -125,8 +126,8 @@ const Header: React.FC = () => {
             <button 
               onClick={handleManualSync} 
               className="header-button sync-button"
-              disabled={syncStatus === 'syncing'}
-              title="Sync to GitHub now"
+              disabled={syncStatus === 'syncing' || autoSyncPending}
+              title={autoSyncPending ? "Auto-sync pending..." : "Sync to GitHub now"}
             >
               🔄 Sync
             </button>

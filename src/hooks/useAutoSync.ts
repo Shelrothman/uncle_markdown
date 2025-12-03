@@ -10,7 +10,7 @@ const SYNC_DELAY = 10000; // 10 seconds
  */
 export function useAutoSync() {
   const files = useFileStore((state) => state.files);
-  const { getOctokit, user, repoName, setSyncStatus, setLastSyncTime } = useAuthStore();
+  const { getOctokit, user, repoName, setSyncStatus, setLastSyncTime, setAutoSyncPending } = useAuthStore();
   const syncTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const filesRef = useRef(files);
 
@@ -24,6 +24,7 @@ export function useAutoSync() {
     
     // Only auto-sync if user is authenticated
     if (!octokit || !user || !repoName) {
+      setAutoSyncPending(false);
       return;
     }
 
@@ -32,8 +33,12 @@ export function useAutoSync() {
       clearTimeout(syncTimeoutRef.current);
     }
 
+    // Set pending flag
+    setAutoSyncPending(true);
+
     // Set new timeout for sync
     syncTimeoutRef.current = setTimeout(async () => {
+      setAutoSyncPending(false);
       setSyncStatus('syncing');
       
       const result = await triggerSync(octokit, user, repoName, filesRef.current);
@@ -50,7 +55,8 @@ export function useAutoSync() {
     return () => {
       if (syncTimeoutRef.current) {
         clearTimeout(syncTimeoutRef.current);
+        setAutoSyncPending(false);
       }
     };
-  }, [files, getOctokit, user, repoName, setSyncStatus, setLastSyncTime]);
+  }, [files, getOctokit, user, repoName, setSyncStatus, setLastSyncTime, setAutoSyncPending]);
 }
