@@ -2,6 +2,8 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Octokit } from '@octokit/rest';
 
+export type SyncStatus = 'idle' | 'syncing' | 'synced' | 'error';
+
 interface GitHubUser {
   login: string;
   avatar_url: string;
