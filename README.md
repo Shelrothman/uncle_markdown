@@ -8,9 +8,12 @@ A modern, VSCode-inspired markdown editor with GitHub integration. Create, edit,
 
 - 📁 **File Tree Sidebar**: Organize files and folders just like VSCode
 - ✏️ **Live Preview**: See markdown rendered in real-time as you type
-- 💾 **Auto-Save**: Your work is automatically saved every 500ms
-- 🎨 **VSCode Dark Theme**: Classic green and black color scheme
-- 🔐 **GitHub Integration**: Login with GitHub to auto-create a repository for your notes
+- 💾 **Local Auto-Save**: Your work is automatically saved to browser storage every 500ms
+- ☁️ **GitHub Auto-Sync**: Files automatically sync to GitHub every 10 seconds after changes
+- 🎨 **VSCode Dark Theme**: Classic green and black color scheme with gradient code blocks
+- 🔐 **GitHub OAuth Integration**: Secure login with GitHub to auto-create a private repository
+- 🔄 **Smart Retry Logic**: Automatic retry with exponential backoff for sync conflicts
+- 📊 **Sync Status Indicator**: Visual footer showing sync status (VSCode-style)
 - ⚡ **Fast & Modern**: Built with Vite, React, and TypeScript
 
 ## Installation
@@ -39,7 +42,9 @@ pnpm build
 1. Click on a file in the sidebar to open it
 2. Type your markdown in the left pane
 3. See the live preview in the right pane
-4. Your changes are auto-saved after 500ms of inactivity
+4. Your changes are auto-saved to localStorage after 500ms
+5. After 10 seconds of inactivity, files sync to GitHub automatically
+6. Check the footer for sync status
 
 ### File Operations
 
@@ -49,12 +54,39 @@ pnpm build
 
 ### GitHub Integration
 
-1. Click "Login with GitHub" in the header
-2. Authorize the application
-3. A repository named `uncle-markdown-notes` will be automatically created
-4. (Future) Your files will be synced to this repository
+Uncle Markdown provides seamless GitHub integration with automatic syncing:
 
-> **Note**: GitHub OAuth requires additional setup. See `AI_AGENT_GUIDE.md` for detailed instructions.
+1. **Login**: Click "Login with GitHub" in the header
+2. **Authorize**: Grant access to the Uncle Markdown application
+3. **Auto-Create Repository**: A private repository named `uncle-markdown-notes` is automatically created
+4. **Auto-Sync**: Your files automatically sync to GitHub every 10 seconds after you make changes
+5. **Monitor Status**: Check the footer at the bottom for real-time sync status
+
+#### How Syncing Works
+
+- **Local Storage First**: All files are saved to your browser's localStorage every 500ms
+- **GitHub Sync**: After 10 seconds of inactivity, changed files are synced to your GitHub repository
+- **Automatic Retry**: If a sync fails (e.g., network issues), it will automatically retry with exponential backoff
+- **Status Indicators**: 
+  - `↻ Syncing...` - Upload in progress (blue)
+  - `✓ Synced 2m ago` - Successfully synced (green)
+  - `✗ Sync failed` - Error occurred (red, hover for details)
+  - `○ Not synced` - No sync attempted yet (gray)
+
+#### Repository Structure
+
+Your files are organized in the repository exactly as they appear in the sidebar. For example:
+```
+uncle-markdown-notes/
+├── README.md
+├── notes/
+│   ├── meeting-notes.md
+│   └── ideas.md
+└── projects/
+    └── project-plan.md
+```
+
+> **Note**: The sync is one-way from the app to GitHub. If you edit files directly on GitHub, those changes won't automatically appear in the app. The app is designed as the primary editing interface.
 
 ## Project Structure
 
@@ -97,14 +129,15 @@ vercel login
 vercel
 ```
 
-See `DEPLOYMENT.md` for detailed deployment instructions.
-
 ## Technologies Used
 
 - **Vite** - Build tool and dev server
-- **React** - UI framework
-- **TypeScript** - Type safety
-- **Zustand** - State management
+- **React 19** - UI framework with latest features
+- **TypeScript** - Type safety and better DX
+- **Zustand** - Lightweight state management with persistence
+- **react-markdown** - Markdown rendering with GitHub Flavored Markdown
+- **@octokit/rest** - GitHub API integration for repository management
+- **Vercel** - Serverless deployment platform for OAuth backend
 - **react-markdown** - Markdown rendering
 - **@octokit/rest** - GitHub API integration
 
