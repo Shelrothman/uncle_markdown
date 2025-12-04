@@ -132,6 +132,11 @@ const Editor: React.FC = () => {
   }, [lines, activeFile, updateFileContent]);
 
   const handleLineClick = useCallback((lineIndex: number, e: React.MouseEvent) => {
+    // Don't switch if clicking inside a textarea
+    if ((e.target as HTMLElement).tagName === 'TEXTAREA') {
+      return;
+    }
+    
     // Only switch if clicking on the preview, not if already editing
     if (editingLine !== lineIndex) {
       e.stopPropagation();
@@ -187,32 +192,39 @@ const Editor: React.FC = () => {
       
       // Move to next line
       setEditingLine(lineIndex + 1);
-    } else if (e.key === 'Backspace' && e.currentTarget.selectionStart === 0 && lineIndex > 0) {
-      e.preventDefault();
-      const newLines = [...lines];
-      const currentLine = newLines[lineIndex];
-      const previousLine = newLines[lineIndex - 1];
-      const cursorPos = previousLine.length;
+    } else if (e.key === 'Backspace') {
+      const textarea = e.currentTarget;
+      const hasSelection = textarea.selectionStart !== textarea.selectionEnd;
       
-      // Merge with previous line
-      newLines[lineIndex - 1] = previousLine + currentLine;
-      newLines.splice(lineIndex, 1);
-      
-      const newContent = newLines.join('\n');
-      setLocalContent(newContent);
-      
-      if (activeFile) {
-        updateFileContent(activeFile.id, newContent);
-      }
-      
-      // Move to previous line
-      setEditingLine(lineIndex - 1);
-      requestAnimationFrame(() => {
-        const textarea = lineRefs.current[lineIndex - 1];
-        if (textarea) {
-          textarea.setSelectionRange(cursorPos, cursorPos);
+      // Only merge lines if cursor is at position 0 AND there's no selection
+      if (!hasSelection && textarea.selectionStart === 0 && lineIndex > 0) {
+        e.preventDefault();
+        const newLines = [...lines];
+        const currentLine = newLines[lineIndex];
+        const previousLine = newLines[lineIndex - 1];
+        const cursorPos = previousLine.length;
+        
+        // Merge with previous line
+        newLines[lineIndex - 1] = previousLine + currentLine;
+        newLines.splice(lineIndex, 1);
+        
+        const newContent = newLines.join('\n');
+        setLocalContent(newContent);
+        
+        if (activeFile) {
+          updateFileContent(activeFile.id, newContent);
         }
-      });
+        
+        // Move to previous line
+        setEditingLine(lineIndex - 1);
+        requestAnimationFrame(() => {
+          const textarea = lineRefs.current[lineIndex - 1];
+          if (textarea) {
+            textarea.setSelectionRange(cursorPos, cursorPos);
+          }
+        });
+      }
+      // Otherwise, let default backspace behavior handle deleting selected text
     } else if (e.key === 'ArrowUp' && lineIndex > 0) {
       e.preventDefault();
       setEditingLine(lineIndex - 1);
