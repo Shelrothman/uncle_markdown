@@ -18,7 +18,7 @@ const LinePreview = React.memo(({ line }: { line: string }) => {
       remarkPlugins={[remarkGfm]}
       rehypePlugins={[rehypeRaw, rehypeSanitize]}
       components={{
-        p: ({ children }) => <>{children}</>,
+        p: ({ children }) => <span style={{ display: 'block' }}>{children}</span>,
         // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
         code: ({ node, inline, className, children, ...props }: any) => {
           const isInline = inline !== false && !className?.includes('language-');
@@ -86,6 +86,17 @@ const Editor: React.FC = () => {
     }
   }, [editingLine]);
 
+  // Auto-resize textarea when content changes
+  useEffect(() => {
+    if (editingLine !== null && lineRefs.current[editingLine]) {
+      const textarea = lineRefs.current[editingLine];
+      if (textarea) {
+        textarea.style.height = 'auto';
+        textarea.style.height = `${textarea.scrollHeight}px`;
+      }
+    }
+  }, [editingLine, lines]);
+
   // Cleanup timeouts on unmount
   useEffect(() => {
     return () => {
@@ -100,6 +111,13 @@ const Editor: React.FC = () => {
     const newContent = newLines.join('\n');
     
     setLocalContent(newContent);
+
+    // Auto-resize textarea
+    const textarea = lineRefs.current[lineIndex];
+    if (textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
 
     // Auto-save after 500ms of no typing
     if (saveTimeoutRef.current) {
