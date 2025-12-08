@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -13,13 +14,86 @@ const LinePreview = React.memo(({ line }: { line: string }) => {
     return <span className="empty-line">&nbsp;</span>;
   }
 
+  // Check if line is a list item
+  const unorderedListMatch = line.match(/^(\s*)([-*+])\s+(.*)$/);
+  const orderedListMatch = line.match(/^(\s*)(\d+\.)\s+(.*)$/);
+  
+  if (unorderedListMatch) {
+    const [, indent, , content] = unorderedListMatch;
+    const indentLevel = indent.length / 2; // Assuming 2 spaces per indent
+    return (
+      <div style={{ paddingLeft: `${indentLevel * 2}em`, display: 'flex', gap: '0.5em' }}>
+        <span>•</span>
+        <span style={{ flex: 1 }}>
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            rehypePlugins={[rehypeRaw, rehypeSanitize]}
+            components={{
+              p: ({ children }) => <>{children}</>,
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
+              code: ({ node, inline, className, children, ...props }: any) => {
+                const isInline = inline !== false && !className?.includes('language-');
+                if (!isInline) return <CodeBlock className={className}>{children}</CodeBlock>;
+                const text = String(children).trim();
+                const colorMatch = text.match(/^(red|green|blue|yellow|purple|orange):(.*?)$/);
+                if (colorMatch) {
+                  const [, color, content] = colorMatch;
+                  return <code className={`highlight-${color} ${className || ''}`} {...props}>{content}</code>;
+                }
+                return <code className={className} {...props}>{children}</code>;
+              }
+            }}
+          >
+            {content}
+          </ReactMarkdown>
+        </span>
+      </div>
+    );
+  }
+  
+  if (orderedListMatch) {
+    const [, indent, number, content] = orderedListMatch;
+    const indentLevel = indent.length / 2;
+    return (
+      <div style={{ paddingLeft: `${indentLevel * 2}em`, display: 'flex', gap: '0.5em' }}>
+        <span>{number}</span>
+        <span style={{ flex: 1 }}>
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            rehypePlugins={[rehypeRaw, rehypeSanitize]}
+            components={{
+              p: ({ children }) => <>{children}</>,
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
+              code: ({ node, inline, className, children, ...props }: any) => {
+                const isInline = inline !== false && !className?.includes('language-');
+                if (!isInline) return <CodeBlock className={className}>{children}</CodeBlock>;
+                const text = String(children).trim();
+                const colorMatch = text.match(/^(red|green|blue|yellow|purple|orange):(.*?)$/);
+                if (colorMatch) {
+                  const [, color, content] = colorMatch;
+                  return <code className={`highlight-${color} ${className || ''}`} {...props}>{content}</code>;
+                }
+                return <code className={className} {...props}>{children}</code>;
+              }
+            }}
+          >
+            {content}
+          </ReactMarkdown>
+        </span>
+      </div>
+    );
+  }
+
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
       rehypePlugins={[rehypeRaw, rehypeSanitize]}
       components={{
         p: ({ children }) => <span style={{ display: 'block' }}>{children}</span>,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
+        ul: ({ children }) => <>{children}</>,
+        ol: ({ children }) => <>{children}</>,
+        li: ({ children }) => <span style={{ display: 'block' }}>• {children}</span>,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         code: ({ node, inline, className, children, ...props }: any) => {
           const isInline = inline !== false && !className?.includes('language-');
           

@@ -122,6 +122,9 @@
 
 .line-preview > * {
   margin: 0 !important;
+}
+
+.line-preview > :not(ul):not(ol) {
   padding: 0 !important;
 }
 
@@ -229,6 +232,19 @@
 .line-preview blockquote p {
   display: block;
   margin: 0 !important;
+}
+
+/* List styling for line preview */
+.line-preview ul,
+.line-preview ol {
+  display: block;
+  margin: 0;
+  padding-left: 2em;
+}
+
+.line-preview li {
+  display: list-item;
+  margin: 0;
 }
 
 /* Old full-document preview styles (kept for backwards compatibility) */
