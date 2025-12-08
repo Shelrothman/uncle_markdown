@@ -221,16 +221,19 @@
 
 /* Blockquote styling for line preview */
 .line-preview blockquote {
-  display: block;
+  display: inline-block;
   border-left: 4px solid #4ec9b0;
-  padding-left: 10px !important;
+  padding-left: 12px;
+  padding-top: 2px;
+  padding-bottom: 2px;
   margin-left: 0;
   color: #9d9d9d;
   font-style: italic;
+  line-height: 1.5;
 }
 
 .line-preview blockquote p {
-  display: block;
+  display: inline;
   margin: 0 !important;
 }
 

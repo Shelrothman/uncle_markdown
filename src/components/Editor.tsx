@@ -17,6 +17,46 @@ const LinePreview = React.memo(({ line }: { line: string }) => {
   // Check if line is a list item
   const unorderedListMatch = line.match(/^(\s*)([-*+])\s+(.*)$/);
   const orderedListMatch = line.match(/^(\s*)(\d+\.)\s+(.*)$/);
+  const blockquoteMatch = line.match(/^>\s+(.*)$/);
+  
+  if (blockquoteMatch) {
+    const [, content] = blockquoteMatch;
+    return (
+      <div style={{ display: 'flex', gap: '12px', alignItems: 'stretch' }}>
+        <div style={{ 
+          width: '4px', 
+          backgroundColor: '#4ec9b0',
+          flexShrink: 0
+        }}></div>
+        <span style={{ 
+          color: '#9d9d9d', 
+          fontStyle: 'italic',
+          flex: 1
+        }}>
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            rehypePlugins={[rehypeRaw, rehypeSanitize]}
+            components={{
+              p: ({ children }) => <>{children}</>,
+              code: ({ node, inline, className, children, ...props }: any) => {
+                const isInline = inline !== false && !className?.includes('language-');
+                if (!isInline) return <CodeBlock className={className}>{children}</CodeBlock>;
+                const text = String(children).trim();
+                const colorMatch = text.match(/^(red|green|blue|yellow|purple|orange):(.*?)$/);
+                if (colorMatch) {
+                  const [, color, content] = colorMatch;
+                  return <code className={`highlight-${color} ${className || ''}`} {...props}>{content}</code>;
+                }
+                return <code className={className} {...props}>{children}</code>;
+              }
+            }}
+          >
+            {content}
+          </ReactMarkdown>
+        </span>
+      </div>
+    );
+  }
   
   if (unorderedListMatch) {
     const [, indent, , content] = unorderedListMatch;
